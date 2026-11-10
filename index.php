@@ -8,6 +8,7 @@ require_once __DIR__ . '/controllers/AuthController.php';
 require_once __DIR__ . '/controllers/BookingController.php';
 require_once __DIR__ . '/controllers/CourtController.php';
 require_once __DIR__ . '/controllers/AdminController.php';
+require_once __DIR__ . '/controllers/HomeController.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -17,12 +18,14 @@ $auth = new AuthController();
 $booking = new BookingController();
 $courtController = new CourtController();
 $admin = new AdminController();
+$home = new HomeController();
 
 $act = $_GET['act'] ?? '/';
 
 match ($act) {
     // Trang khách
-    '/' => $booking->index(),
+      '/' => $home->index(),
+    'booking' => $booking->index(),
     'booking-form' => $booking->form(),
     'booking-create' => $booking->create(),
     'booking-cancel' => $booking->cancel(),

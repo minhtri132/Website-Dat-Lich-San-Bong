@@ -134,3 +134,124 @@ a.slot-free:hover { background: var(--green); color: #fff; text-decoration: none
 .chart-today .chart-bar { background: var(--green); }
 .chart-value { font-size: 13px; color: var(--muted); }
 .chart-label { font-size: 13px; font-weight: 600; }
+/* ===== Trang chủ ===== */
+.menu > a.active { color: #fff; font-weight: 600; border-bottom: 2px solid #ffd54a; padding-bottom: 2px; }
+.button-accent { background: #ffd54a; border-color: #ffd54a; color: #17231d; font-weight: 600; }
+.button-accent:hover { background: #ffc61a; }
+.button-large { padding: 14px 26px; font-size: 17px; }
+.button-ghost { background: transparent; border-color: rgba(255, 255, 255, .6); color: #fff; }
+.button-ghost:hover { background: rgba(255, 255, 255, .12); }
+.notices { padding-bottom: 0; }
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 70px, transparent 70px 140px),
+        linear-gradient(135deg, #0f3d26 0%, #16834b 100%);
+}
+.hero::before {
+    content: "";
+    position: absolute;
+    right: -90px;
+    top: 50%;
+    width: 340px;
+    height: 340px;
+    transform: translateY(-50%);
+    border: 4px solid rgba(255, 255, 255, .14);
+    border-radius: 50%;
+}
+.hero::after {
+    content: "";
+    position: absolute;
+    right: 80px;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: rgba(255, 255, 255, .14);
+}
+.hero-inner { position: relative; z-index: 1; padding-top: 72px; padding-bottom: 64px; }
+.eyebrow { margin-bottom: 12px; font-size: 14px; font-weight: 700; letter-spacing: .12em; color: #ffd54a; }
+.hero h1 { max-width: 720px; margin-bottom: 16px; font-size: clamp(30px, 5vw, 50px); line-height: 1.15; }
+.hero-text { max-width: 600px; margin-bottom: 28px; font-size: 18px; line-height: 1.6; color: #dff2e7; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.center-actions { justify-content: center; }
+.hero-stats { display: flex; flex-wrap: wrap; gap: 36px; margin: 40px 0 0; padding: 0; list-style: none; }
+.hero-stats li { display: flex; flex-direction: column; }
+.hero-stats strong { font-size: 26px; }
+.hero-stats span { font-size: 14px; color: #bfe3cf; }
+
+.section { padding: 56px 0; }
+.section-alt { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.section-title { margin-bottom: 8px; text-align: center; font-size: clamp(24px, 3.5vw, 32px); }
+.section-sub { margin-bottom: 32px; text-align: center; color: var(--muted); }
+.section-title + .steps, .section-title + .features { margin-top: 32px; }
+
+.court-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.court-card { overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 10px; transition: transform .15s, box-shadow .15s; }
+.court-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(15, 61, 38, .12); }
+.pitch {
+    position: relative;
+    height: 120px;
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, .08) 0 30px, transparent 30px 60px),
+        #2e9e5f;
+}
+.pitch::before { content: ""; position: absolute; inset: 12px; border: 2px solid rgba(255, 255, 255, .75); border-radius: 3px; }
+.pitch::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+    border: 2px solid rgba(255, 255, 255, .75);
+    border-radius: 50%;
+}
+.court-body { padding: 18px; }
+.court-body h3 { margin: 0 0 4px; font-size: 20px; }
+.court-body p { margin-bottom: 8px; }
+.court-price strong { font-size: 20px; color: var(--green); }
+.court-free { font-size: 14px; font-weight: 600; }
+.court-free.has-free { color: #0f5a33; }
+.court-free.no-free { color: #8c1d18; }
+.court-body .button { margin-top: 6px; }
+
+.steps, .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.step, .feature { text-align: center; padding: 8px 12px; }
+.step h3, .feature h3 { margin: 12px 0 6px; font-size: 18px; }
+.step p, .feature p { margin: 0; color: var(--muted); line-height: 1.55; }
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--green);
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+}
+.feature { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 24px 18px; }
+.feature-icon { font-size: 32px; }
+
+.cta { text-align: center; color: #fff; padding: 48px 24px; border-radius: 12px; background: linear-gradient(135deg, #0f3d26 0%, #16834b 100%); }
+.cta h2 { margin-bottom: 10px; font-size: clamp(24px, 3.5vw, 32px); }
+.cta p { max-width: 560px; margin: 0 auto 22px; color: #dff2e7; line-height: 1.6; }
+
+/* ===== Chân trang ===== */
+.site-footer { margin-top: 24px; background: #0f3d26; color: #cfe8da; }
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; padding-top: 36px; padding-bottom: 12px; }
+.site-footer p { margin: 0 0 6px; line-height: 1.5; }
+.footer-brand { font-size: 20px; font-weight: 700; color: #fff; }
+.footer-title { font-weight: 700; color: #fff; }
+.footer-copy { padding: 14px 20px 22px; text-align: center; font-size: 14px; color: #9cc5ad; border-top: 1px solid rgba(255, 255, 255, .1); margin-top: 12px !important; }
+
+@media (max-width: 650px) {
+    .hero::before, .hero::after { display: none; }
+    .hero-inner { padding-top: 48px; padding-bottom: 44px; }
+    .hero-stats { gap: 22px; }
+}
