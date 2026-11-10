@@ -1,0 +1,136 @@
+:root {
+    color-scheme: light;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #17231d;
+    background: #f3f6f4;
+    --green: #16834b;
+    --green-dark: #0f6a3b;
+    --line: #dbe4de;
+    --muted: #6a7970;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: var(--green); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.container { max-width: 1280px; margin: 0 auto; padding: 24px 20px; }
+
+/* Thanh menu */
+.topbar { background: #0f3d26; color: #fff; }
+.topbar .container { padding-top: 12px; padding-bottom: 12px; }
+.nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.brand { color: #fff; font-size: 20px; font-weight: 700; }
+.brand:hover { text-decoration: none; }
+.menu { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.menu > a { color: #e3f3ea; }
+.user-name { color: #b9dcc8; font-size: 14px; }
+
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 8px; font-size: clamp(24px, 3.5vw, 32px); }
+h2 { margin-bottom: 12px; font-size: 20px; }
+.muted { color: var(--muted); }
+.center { text-align: center; }
+
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+.date-nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 22px; margin-bottom: 20px; }
+.narrow { max-width: 520px; margin-left: auto; margin-right: auto; }
+
+/* Nút */
+.button, .button-link {
+    font: inherit;
+    cursor: pointer;
+}
+.button {
+    display: inline-block;
+    padding: 10px 16px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+    color: #17231d;
+}
+.button:hover { text-decoration: none; background: #eef4f0; }
+.button-small { padding: 6px 12px; font-size: 14px; }
+.button-primary { background: var(--green); border-color: var(--green); color: #fff; }
+.button-primary:hover { background: var(--green-dark); }
+.button-link { padding: 0; border: 0; background: none; color: var(--green); }
+.button-link:hover { text-decoration: underline; }
+.button-link.danger { color: #b3261e; }
+.inline-form { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+
+/* Form */
+.form { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+.form label, .filter label { font-weight: 600; font-size: 14px; }
+input[type="text"], input[type="tel"], input[type="email"], input[type="password"],
+input[type="number"], input[type="date"], select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font: inherit;
+    background: #fff;
+}
+.filter input, .filter select, .date-nav input { width: auto; }
+.form .checkbox { display: flex; align-items: center; gap: 8px; font-weight: 400; }
+.form .checkbox input { width: auto; }
+.actions { display: flex; gap: 10px; margin-top: 8px; }
+.filter { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.summary { list-style: none; padding: 0; margin: 12px 0; line-height: 1.8; }
+.total { font-size: 18px; margin: 8px 0 0; }
+.total strong { color: var(--green); }
+
+/* Thông báo */
+.notice { padding: 12px 14px; border-radius: 6px; margin-bottom: 16px; border: 1px solid; }
+.notice-success { background: #e7f6ee; border-color: #a9dbc0; color: #0f5a33; }
+.notice-error { background: #fdeceb; border-color: #f2b8b5; color: #8c1d18; }
+.empty-state { padding: 20px; text-align: center; color: var(--muted); background: #f8faf9; border-radius: 6px; }
+
+/* Thống kê */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.stat { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; }
+.stat-label { display: block; color: var(--muted); font-size: 14px; margin-bottom: 6px; }
+.stat strong { font-size: 24px; color: var(--green); }
+
+/* Bảng */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
+th { background: #f6f9f7; font-size: 14px; }
+th small { display: block; font-weight: 400; color: var(--muted); }
+.row-actions { display: flex; gap: 14px; align-items: center; }
+.row-actions form { margin: 0; }
+
+/* Bảng giờ trống */
+table.grid th, table.grid td { text-align: center; min-width: 110px; }
+table.grid th.hour { text-align: left; white-space: nowrap; min-width: 120px; }
+.legend { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.slot { display: block; padding: 8px 6px; border-radius: 6px; font-size: 14px; font-weight: 600; }
+.legend .slot { display: inline-block; padding: 4px 12px; }
+.slot-free { background: #e7f6ee; color: #0f5a33; border: 1px solid #a9dbc0; }
+a.slot-free:hover { background: var(--green); color: #fff; text-decoration: none; }
+.slot-booked { background: #fdeceb; color: #8c1d18; border: 1px solid #f2b8b5; }
+.slot-mine { background: #e5f0fd; color: #124a8a; border: 1px solid #a9c9ee; }
+.slot-past { background: #eef0ef; color: #9aa59f; border: 1px solid #e0e5e2; font-weight: 400; }
+
+/* Trạng thái */
+.status { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+.status-confirmed { background: #e7f6ee; color: #0f5a33; }
+.status-done { background: #e5f0fd; color: #124a8a; }
+.status-cancelled { background: #fdeceb; color: #8c1d18; }
+
+.footer { text-align: center; color: var(--muted); padding: 20px; font-size: 14px; }
+
+@media (max-width: 650px) {
+    .container { padding: 16px 12px; }
+    .panel { padding: 14px; }
+    .menu { gap: 10px; }
+}
+/* Biểu đồ tổng tiền theo ngày */
+.chart { display: flex; align-items: flex-end; gap: 12px; height: 220px; padding-top: 8px; }
+.chart-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 6px; }
+.chart-bar { width: 100%; max-width: 64px; min-height: 3px; background: #a9dbc0; border-radius: 4px 4px 0 0; }
+.chart-today .chart-bar { background: var(--green); }
+.chart-value { font-size: 13px; color: var(--muted); }
+.chart-label { font-size: 13px; font-weight: 600; }

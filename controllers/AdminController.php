@@ -1,0 +1,85 @@
+<?php
+// Trang quản trị: tổng quan và quản lý khách hàng (chỉ admin)
+class AdminController
+{
+    public function dashboard(): void
+    {
+        requireAdmin();
+
+        $stats = [
+            'today_count' => 0, 'today_revenue' => 0,
+            'month_count' => 0, 'month_revenue' => 0,
+            'courts_total' => 0, 'courts_active' => 0,
+            'customers' => 0,
+        ];
+        $chart = [];
+        $upcoming = [];
+        $pageError = null;
+
+        try {
+            $bookings = new BookingModel();
+            $today = new DateTimeImmutable('today');
+            $tomorrow = $today->modify('+1 day');
+            $monthStart = $today->modify('first day of this month');
+            $nextMonth = $monthStart->modify('+1 month');
+
+            $todaySummary = $bookings->summaryBetween($today->format('Y-m-d'), $tomorrow->format('Y-m-d'));
+            $monthSummary = $bookings->summaryBetween($monthStart->format('Y-m-d'), $nextMonth->format('Y-m-d'));
+            $stats['today_count'] = (int) $todaySummary['cnt'];
+            $stats['today_revenue'] = (float) $todaySummary['revenue'];
+            $stats['month_count'] = (int) $monthSummary['cnt'];
+            $stats['month_revenue'] = (float) $monthSummary['revenue'];
+
+            $courts = (new CourtModel())->getAll();
+            $stats['courts_total'] = count($courts);
+            $stats['courts_active'] = count(array_filter($courts, fn ($court) => (int) $court['is_active'] === 1));
+            $stats['customers'] = (new UserModel())->countCustomers();
+
+            // Tổng tiền theo ngày: 3 ngày trước, hôm nay và 3 ngày tới
+            $from = $today->modify('-3 days');
+            $byDay = $bookings->revenueByDay($from->format('Y-m-d'), $today->modify('+4 days')->format('Y-m-d'));
+            $max = max(1, ...array_values($byDay ?: [0]));
+            for ($i = 0; $i < 7; $i++) {
+                $day = $from->modify('+' . $i . ' day');
+                $key = $day->format('Y-m-d');
+                $value = $byDay[$key] ?? 0;
+                $chart[] = [
+                    'label' => $day->format('d/m'),
+                    'value' => $value,
+                    'percent' => (int) round($value / $max * 100),
+                    'is_today' => $i === 3,
+                ];
+            }
+
+            $upcoming = $bookings->getUpcoming(8);
+        } catch (PDOException $exception) {
+            error_log($exception->getMessage());
+            $pageError = 'Không thể tải dữ liệu thống kê.';
+        }
+
+        render('admin/dashboard', [
+            'stats' => $stats,
+            'chart' => $chart,
+            'upcoming' => $upcoming,
+            'pageError' => $pageError,
+        ]);
+    }
+
+    public function users(): void
+    {
+        requireAdmin();
+
+        $keyword = trim((string) ($_GET['q'] ?? ''));
+        $users = [];
+        $pageError = null;
+
+        try {
+            $users = (new UserModel())->searchCustomers($keyword);
+        } catch (PDOException $exception) {
+            error_log($exception->getMessage());
+            $pageError = 'Không thể tải danh sách khách hàng.';
+        }
+
+        render('admin/users', ['users' => $users, 'keyword' => $keyword, 'pageError' => $pageError]);
+    }
+}
