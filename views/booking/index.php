@@ -13,12 +13,12 @@ require __DIR__ . '/../layout/header.php';
         <h1>Đặt sân bóng 7 người</h1>
         <p class="muted">Chọn một ô trống trong bảng để đặt sân. Giờ nhận đặt từ <?= sprintf('%02d:00', OPEN_HOUR) ?> đến <?= sprintf('%02d:00', CLOSE_HOUR) ?>.</p>
     </div>
-    <div class="date-nav">
-        <a class="button button-small" href="index.php?act=%2F&date=<?= e($prevDate) ?>">← Hôm trước</a>
-        <a class="button button-small" href="index.php">Hôm nay</a>
-        <a class="button button-small" href="index.php?act=%2F&date=<?= e($nextDate) ?>">Hôm sau →</a>
+        <div class="date-nav">
+        <a class="button button-small" href="index.php?act=booking&date=<?= e($prevDate) ?>">← Hôm trước</a>
+        <a class="button button-small" href="index.php?act=booking">Hôm nay</a>
+        <a class="button button-small" href="index.php?act=booking&date=<?= e($nextDate) ?>">Hôm sau →</a>
         <form method="get" class="inline-form">
-            <input type="hidden" name="act" value="/">
+            <input type="hidden" name="act" value="booking">
             <input type="date" name="date" value="<?= e($date) ?>" required>
             <button type="submit" class="button button-small button-primary">Xem</button>
         </form>
