@@ -2,13 +2,16 @@
 // Trang quản trị: tổng quan và quản lý khách hàng (chỉ admin)
 class AdminController
 {
-    public function dashboard(): void
+        public function dashboard(): void
     {
         requireAdmin();
 
         $stats = [
-            'today_count' => 0, 'today_revenue' => 0,
-            'month_count' => 0, 'month_revenue' => 0,
+            'today_count' => 0, 'today_collected' => 0,
+            'month_count' => 0, 'month_collected' => 0,
+            'pending_count' => 0, 'pending_reported' => 0,
+            'refund_count' => 0, 'refund_amount' => 0,
+            'outstanding' => 0,
             'courts_total' => 0, 'courts_active' => 0,
             'customers' => 0,
         ];
@@ -23,19 +26,27 @@ class AdminController
             $monthStart = $today->modify('first day of this month');
             $nextMonth = $monthStart->modify('+1 month');
 
-            $todaySummary = $bookings->summaryBetween($today->format('Y-m-d'), $tomorrow->format('Y-m-d'));
-            $monthSummary = $bookings->summaryBetween($monthStart->format('Y-m-d'), $nextMonth->format('Y-m-d'));
-            $stats['today_count'] = (int) $todaySummary['cnt'];
-            $stats['today_revenue'] = (float) $todaySummary['revenue'];
-            $stats['month_count'] = (int) $monthSummary['cnt'];
-            $stats['month_revenue'] = (float) $monthSummary['revenue'];
+            $stats['today_count'] = (int) $bookings->summaryBetween($today->format('Y-m-d'), $tomorrow->format('Y-m-d'))['cnt'];
+            $stats['month_count'] = (int) $bookings->summaryBetween($monthStart->format('Y-m-d'), $nextMonth->format('Y-m-d'))['cnt'];
+            $stats['today_collected'] = $bookings->collectedBetween($today->format('Y-m-d'), $tomorrow->format('Y-m-d'));
+            $stats['month_collected'] = $bookings->collectedBetween($monthStart->format('Y-m-d'), $nextMonth->format('Y-m-d'));
+
+            $pending = $bookings->pendingDeposits();
+            $stats['pending_count'] = (int) $pending['cnt'];
+            $stats['pending_reported'] = (int) $pending['reported'];
+
+            $refunds = $bookings->refundsDue();
+            $stats['refund_count'] = (int) $refunds['cnt'];
+            $stats['refund_amount'] = (float) $refunds['amount'];
+
+            $stats['outstanding'] = $bookings->outstandingUpcoming();
 
             $courts = (new CourtModel())->getAll();
             $stats['courts_total'] = count($courts);
             $stats['courts_active'] = count(array_filter($courts, fn ($court) => (int) $court['is_active'] === 1));
             $stats['customers'] = (new UserModel())->countCustomers();
 
-            // Tổng tiền theo ngày: 3 ngày trước, hôm nay và 3 ngày tới
+            // Giá trị các lịch theo ngày: 3 ngày trước, hôm nay và 3 ngày tới
             $from = $today->modify('-3 days');
             $byDay = $bookings->revenueByDay($from->format('Y-m-d'), $today->modify('+4 days')->format('Y-m-d'));
             $max = max(1, ...array_values($byDay ?: [0]));

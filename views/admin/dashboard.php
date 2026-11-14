@@ -24,16 +24,32 @@ require __DIR__ . '/../layout/header.php';
         <strong><?= (int) $stats['today_count'] ?></strong>
     </div>
     <div class="stat">
-        <span class="stat-label">Tổng tiền hôm nay</span>
-        <strong><?= e(formatMoney($stats['today_revenue'])) ?></strong>
+        <span class="stat-label">Đã thu hôm nay</span>
+        <strong><?= e(formatMoney($stats['today_collected'])) ?></strong>
     </div>
     <div class="stat">
         <span class="stat-label">Lịch tháng <?= e(date('m/Y')) ?></span>
         <strong><?= (int) $stats['month_count'] ?></strong>
     </div>
     <div class="stat">
-        <span class="stat-label">Tổng tiền tháng này</span>
-        <strong><?= e(formatMoney($stats['month_revenue'])) ?></strong>
+        <span class="stat-label">Đã thu tháng này</span>
+        <strong><?= e(formatMoney($stats['month_collected'])) ?></strong>
+    </div>
+    <a class="stat stat-link<?= $stats['pending_count'] > 0 ? ' stat-alert' : '' ?>" href="index.php?act=admin-bookings&date=&status=pending">
+        <span class="stat-label">Chờ đặt cọc</span>
+        <strong><?= (int) $stats['pending_count'] ?></strong>
+        <?php if ($stats['pending_reported'] > 0): ?>
+            <small><?= (int) $stats['pending_reported'] ?> lịch khách đã báo chuyển khoản</small>
+        <?php endif; ?>
+    </a>
+    <a class="stat stat-link<?= $stats['refund_count'] > 0 ? ' stat-alert' : '' ?>" href="index.php?act=admin-bookings&date=&status=cancelled">
+        <span class="stat-label">Cần hoàn tiền</span>
+        <strong><?= e(formatMoney($stats['refund_amount'])) ?></strong>
+        <small><?= (int) $stats['refund_count'] ?> lịch</small>
+    </a>
+    <div class="stat">
+        <span class="stat-label">Còn phải thu (lịch sắp tới)</span>
+        <strong><?= e(formatMoney($stats['outstanding'])) ?></strong>
     </div>
     <div class="stat">
         <span class="stat-label">Sân đang hoạt động</span>
@@ -46,7 +62,7 @@ require __DIR__ . '/../layout/header.php';
 </section>
 
 <section class="panel">
-    <h2>Tổng tiền theo ngày <span class="muted">(3 ngày trước, hôm nay và 3 ngày tới)</span></h2>
+    <h2>Giá trị lịch đặt theo ngày <span class="muted">(3 ngày trước, hôm nay và 3 ngày tới)</span></h2>
     <?php if (!$chart): ?>
         <p class="empty-state">Chưa có dữ liệu.</p>
     <?php else: ?>
@@ -75,8 +91,9 @@ require __DIR__ . '/../layout/header.php';
                         <th>Giờ</th>
                         <th>Sân</th>
                         <th>Khách hàng</th>
-                        <th>Điện thoại</th>
                         <th>Tổng tiền</th>
+                        <th>Đã thu</th>
+                        <th>Trạng thái</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,9 +102,10 @@ require __DIR__ . '/../layout/header.php';
                             <td><?= e((new DateTimeImmutable($booking['start_at']))->format('d/m/Y')) ?></td>
                             <td><?= e((new DateTimeImmutable($booking['start_at']))->format('H:i')) ?>–<?= e((new DateTimeImmutable($booking['end_at']))->format('H:i')) ?></td>
                             <td><?= e($booking['court_name']) ?></td>
-                            <td><?= e($booking['customer_name']) ?></td>
-                            <td><?= e($booking['phone']) ?></td>
+                            <td><a href="index.php?act=booking-detail&id=<?= e($booking['id']) ?>"><?= e($booking['customer_name']) ?></a></td>
                             <td><?= e(formatMoney($booking['total_price'])) ?></td>
+                            <td><?= e(formatMoney($booking['paid_amount'])) ?></td>
+                            <td><span class="status status-<?= e(bookingStatusClass($booking)) ?>"><?= e(bookingStatusText($booking)) ?></span></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -113,28 +113,66 @@ function parseDate($value): ?string
     return $date && $date->format('Y-m-d') === $value ? $value : null;
 }
 
+// Tiền cọc bắt buộc, làm tròn lên đến nghìn đồng và không vượt quá tổng tiền
+function depositFor(float $total): int
+{
+    if (DEPOSIT_PERCENT <= 0) {
+        return 0;
+    }
+    $deposit = (int) (ceil($total * DEPOSIT_PERCENT / 100 / 1000) * 1000);
+
+    return (int) min($deposit, $total);
+}
+
+// Trả về [nhãn, lớp CSS] mô tả tình trạng của một lịch đặt
+function bookingState(array $booking): array
+{
+    $paid = (float) ($booking['paid_amount'] ?? 0);
+    $total = (float) $booking['total_price'];
+
+    if ($booking['status'] === 'cancelled') {
+        return ['Đã hủy', 'cancelled'];
+    }
+    if ($booking['status'] === 'pending') {
+        return ['Chờ đặt cọc', 'pending'];
+    }
+    if (new DateTimeImmutable($booking['end_at']) <= new DateTimeImmutable()) {
+        return ['Hoàn thành', 'done'];
+    }
+    if ($paid >= $total) {
+        return ['Đã thanh toán', 'paid'];
+    }
+    if ($paid > 0) {
+        return ['Đã đặt cọc', 'confirmed'];
+    }
+
+    return ['Đã xác nhận', 'confirmed'];
+}
+
 function bookingStatusText(array $booking): string
 {
-    if ($booking['status'] === 'cancelled') {
-        return 'Đã hủy';
-    }
-    return new DateTimeImmutable($booking['end_at']) <= new DateTimeImmutable()
-        ? 'Hoàn thành'
-        : 'Đã đặt';
+    return bookingState($booking)[0];
 }
 
 function bookingStatusClass(array $booking): string
 {
-    if ($booking['status'] === 'cancelled') {
-        return 'cancelled';
-    }
-    return new DateTimeImmutable($booking['end_at']) <= new DateTimeImmutable()
-        ? 'done'
-        : 'confirmed';
+    return bookingState($booking)[1];
 }
 
+// Số tiền khách còn phải trả
+function remainingAmount(array $booking): float
+{
+    return max(0.0, (float) $booking['total_price'] - (float) ($booking['paid_amount'] ?? 0));
+}
+
+function paymentMethodText(string $method): string
+{
+    return $method === 'cash' ? 'Tiền mặt' : 'Chuyển khoản';
+}
+
+// Chỉ hủy được lịch đang giữ chỗ hoặc đã xác nhận và chưa bắt đầu
 function canCancelBooking(array $booking): bool
 {
-    return $booking['status'] === 'confirmed'
+    return in_array($booking['status'], ['pending', 'confirmed'], true)
         && new DateTimeImmutable($booking['start_at']) > new DateTimeImmutable();
 }

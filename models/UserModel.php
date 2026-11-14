@@ -34,11 +34,13 @@ class UserModel
     }
 
     // Danh sách khách hàng kèm số lần đặt và tổng tiền; $keyword tìm theo tên, số điện thoại, email
-    public function searchCustomers(?string $keyword): array
+       public function searchCustomers(?string $keyword): array
     {
         $sql = "SELECT u.id, u.full_name, u.phone, u.email, u.created_at,
                        COUNT(b.id) AS booking_count,
-                       COALESCE(SUM(CASE WHEN b.status = 'confirmed' THEN b.total_price END), 0) AS total_spent
+                       COALESCE((SELECT SUM(p.amount) FROM payments p
+                                 INNER JOIN bookings b2 ON b2.id = p.booking_id
+                                 WHERE b2.user_id = u.id), 0) AS total_spent
                 FROM users u
                 LEFT JOIN bookings b ON b.user_id = u.id
                 WHERE u.role = 'customer'";

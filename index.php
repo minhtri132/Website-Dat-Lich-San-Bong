@@ -9,37 +9,43 @@ require_once __DIR__ . '/controllers/BookingController.php';
 require_once __DIR__ . '/controllers/CourtController.php';
 require_once __DIR__ . '/controllers/AdminController.php';
 require_once __DIR__ . '/controllers/HomeController.php';
+require_once __DIR__ . '/controllers/PaymentController.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-$auth = new AuthController();
-$booking = new BookingController();
+$authController = new AuthController();
+$bookingController = new BookingController();
 $courtController = new CourtController();
-$admin = new AdminController();
-$home = new HomeController();
+$adminController = new AdminController();
+$homeController = new HomeController();
+$paymentController = new PaymentController();
 
 $act = $_GET['act'] ?? '/';
 
 match ($act) {
     // Trang khách
-      '/' => $home->index(),
-    'booking' => $booking->index(),
-    'booking-form' => $booking->form(),
-    'booking-create' => $booking->create(),
-    'booking-cancel' => $booking->cancel(),
-    'my-bookings' => $booking->myBookings(),
+    '/' => $homeController->index(),
+    'booking' => $bookingController->index(),
+    'booking-form' => $bookingController->form(),
+    'booking-create' => $bookingController->create(),
+    'booking-cancel' => $bookingController->cancel(),
+    'my-bookings' => $bookingController->myBookings(),
+    'booking-detail' => $paymentController->detail(),
+    'booking-report' => $paymentController->report(),
 
     // Tài khoản
-    'login' => $auth->login(),
-    'register' => $auth->register(),
-    'logout' => $auth->logout(),
+    'login' => $authController->login(),
+    'register' => $authController->register(),
+    'logout' => $authController->logout(),
 
     // Trang admin
-    'admin' => $admin->dashboard(),
-    'admin-users' => $admin->users(),
-    'admin-bookings' => $booking->adminList(),
+    'admin' => $adminController->dashboard(),
+    'admin-users' => $adminController->users(),
+    'admin-bookings' => $bookingController->adminList(),
+    'payment-add' => $paymentController->add(),
+    'refund-done' => $paymentController->refund(),
     'courts' => $courtController->index(),
     'court-form' => $courtController->form(),
     'court-save' => $courtController->save(),

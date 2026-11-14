@@ -19,3 +19,20 @@ define('MAX_HOURS', 3);
 // Thông tin liên hệ hiển thị ở chân trang (sửa lại cho đúng với sân của bạn)
 define('SITE_PHONE', '0123456 789');
 define('SITE_ADDRESS', 'Số 36, Đường Đường Chính Chính, Hà Nội');
+
+// ===== Cấu hình đặt cọc và thanh toán =====
+// Phần trăm tiền cọc trên tổng tiền (đặt 0 nếu không yêu cầu cọc)
+define('DEPOSIT_PERCENT', 30);
+// Số phút giữ chỗ để khách đặt cọc, quá hạn lịch tự hủy
+define('HOLD_MINUTES', 15);
+// Hủy trước giờ đá ít nhất bao nhiêu giờ thì được hoàn cọc (hủy sát giờ sẽ mất cọc)
+define('CANCEL_FREE_HOURS', 24);
+// Số lịch chờ đặt cọc tối đa của một khách cùng lúc (chống giữ chỗ ảo)
+define('MAX_PENDING_BOOKINGS', 3);
+
+// Tài khoản nhận tiền chuyển khoản (sửa lại cho đúng)
+define('BANK_NAME', 'Vietcombank');
+define('BANK_ACCOUNT', '0123456789');
+define('BANK_ACCOUNT_NAME', 'NGUYEN VAN A');
+// Mã ngân hàng theo VietQR (ví dụ VCB, MB, ACB, TCB). Để rỗng nếu không muốn hiện mã QR
+define('BANK_ID', '');
