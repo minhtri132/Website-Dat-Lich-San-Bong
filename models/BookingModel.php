@@ -487,4 +487,168 @@ class BookingModel
 
         return $statement->fetchAll();
     }
+//binh thêm phần ktr giao dịch ,chống trùng lặp
+public function processSePayTransaction(array $data): array
+{
+    $transactionId = filter_var(
+        $data['id'] ?? null,
+        FILTER_VALIDATE_INT
+    );
+
+    $amount = filter_var(
+        $data['transferAmount'] ?? null,
+        FILTER_VALIDATE_INT
+    );
+
+    $gateway = trim((string) ($data['gateway'] ?? ''));
+    $accountNumber = trim((string) ($data['accountNumber'] ?? ''));
+    $transferType = strtolower(trim((string) ($data['transferType'] ?? '')));
+    $content = trim((string) ($data['content'] ?? ''));
+
+    if (
+        $transactionId === false ||
+        $transactionId === null ||
+        $transactionId <= 0 ||
+        $amount === false ||
+        $amount <= 0 ||
+        $gateway === '' ||
+        strlen($gateway) > 30
+    ) {
+        return ['status' => 'invalid_data'];
+    }
+
+    if ($transferType !== 'in') {
+        return ['status' => 'ignored'];
+    }
+
+    if ($accountNumber !== BANK_ACCOUNT) {
+        return ['status' => 'wrong_account'];
+    }
+
+    // Tìm mã lịch đặt sân, ví dụ SAN123
+    if (!preg_match('/\bSAN([0-9]+)\b/i', $content, $matches)) {
+    return ['status' => 'booking_code_not_found'];
+}
+
+    $bookingId = filter_var($matches[1], FILTER_VALIDATE_INT);
+
+    if ($bookingId === false || $bookingId <= 0) {
+        return ['status' => 'invalid_booking_code'];
+    }
+
+    $this->conn->beginTransaction();
+
+    try {
+        // Khóa lịch đặt để tránh hai giao dịch cập nhật đồng thời
+        $stmt = $this->conn->prepare(
+            "SELECT id, deposit_amount, status, hold_until
+             FROM bookings
+             WHERE id = ?
+             FOR UPDATE"
+        );
+        $stmt->execute([$bookingId]);
+
+        $booking = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$booking) {
+            $this->conn->rollBack();
+            return ['status' => 'booking_not_found'];
+        }
+
+        if ($booking['status'] !== 'pending') {
+            $this->conn->rollBack();
+            return ['status' => 'booking_not_pending'];
+        }
+
+        if (
+            empty($booking['hold_until']) ||
+            strtotime($booking['hold_until']) <= time()
+        ) {
+            $this->conn->rollBack();
+            return ['status' => 'booking_expired'];
+        }
+
+        // Tổng tiền đã thanh toán trước đó
+        $paidStmt = $this->conn->prepare(
+            "SELECT COALESCE(SUM(amount), 0)
+             FROM payments
+             WHERE booking_id = ?
+               AND type = 'payment'"
+        );
+        $paidStmt->execute([$bookingId]);
+
+        $paidBefore = (int) round((float) $paidStmt->fetchColumn());
+        $deposit = (int) round((float) $booking['deposit_amount']);
+        $depositDue = max(0, $deposit - $paidBefore);
+
+        // Chỉ tự động nhận đúng số tiền cọc còn phải thanh toán
+        if ($depositDue <= 0 || $amount !== $depositDue) {
+            $this->conn->rollBack();
+            return ['status' => 'amount_mismatch'];
+        }
+
+        $referenceCode = trim((string) ($data['referenceCode'] ?? ''));
+        $note = 'Thanh toán SePay';
+
+        if ($referenceCode !== '') {
+            $note .= ' - ' . $referenceCode;
+        }
+
+        $note = substr($note, 0, 255);
+
+        // UNIQUE gateway + gateway_transaction_id sẽ chống giao dịch trùng
+        $insert = $this->conn->prepare(
+            "INSERT IGNORE INTO payments
+                (booking_id, amount, method, gateway,
+                 gateway_transaction_id, type, note, created_by, created_at)
+             VALUES
+                (?, ?, 'transfer', ?, ?, 'payment', ?, NULL, NOW())"
+        );
+
+        $insert->execute([
+            $bookingId,
+            $amount,
+            $gateway,
+            $transactionId,
+            $note
+        ]);
+
+        if ($insert->rowCount() === 0) {
+            $this->conn->rollBack();
+            return ['status' => 'duplicate'];
+        }
+
+        // Xác nhận lịch đặt sau khi nhận đủ tiền cọc
+        $paidAfter = $paidBefore + $amount;
+
+        if ($paidAfter >= $deposit) {
+            $update = $this->conn->prepare(
+                "UPDATE bookings
+                 SET status = 'confirmed',
+                     hold_until = NULL,
+                     transfer_reported = 0
+                 WHERE id = ?
+                   AND status = 'pending'"
+            );
+
+            $update->execute([$bookingId]);
+        }
+
+        $this->conn->commit();
+
+        return [
+            'status' => 'processed',
+            'booking_id' => $bookingId,
+            'confirmed' => $paidAfter >= $deposit
+        ];
+
+    } catch (Throwable $e) {
+        if ($this->conn->inTransaction()) {
+            $this->conn->rollBack();
+        }
+
+        throw $e;
+    }
+}
+
 }

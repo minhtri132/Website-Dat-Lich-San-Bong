@@ -14,12 +14,17 @@ $transferCode = 'SAN' . $booking['id'];
 $isPending = $booking['status'] === 'pending';
 $isOwner = (int) $booking['user_id'] === (currentUser()['id'] ?? 0);
 $backAct = isAdmin() ? 'admin-bookings' : 'my-bookings';
-$qrUrl = '';
+$qrUrl = 'https://img.vietqr.io/image/' . rawurlencode(BANK_ID) . '-' . rawurlencode(BANK_ACCOUNT) . '-compact2.png?'
+    . http_build_query([
+        'amount' => (int) $depositDue,
+        'addInfo' => $transferCode,
+        'accountName' => BANK_ACCOUNT_NAME
+    ]);
 if (BANK_ID !== '' && $depositDue > 0) {
     $qrUrl = 'https://img.vietqr.io/image/' . rawurlencode(BANK_ID) . '-' . rawurlencode(BANK_ACCOUNT) . '-compact2.png?'
         . http_build_query(['amount' => (int) $depositDue, 'addInfo' => $transferCode, 'accountName' => BANK_ACCOUNT_NAME]);
 }
-?>
+?>  
 <section class="page-head">
     <div>
         <h1>Lịch đặt #<?= e($booking['id']) ?> <span class="status status-<?= e($stateClass) ?>"><?= e($stateText) ?></span></h1>

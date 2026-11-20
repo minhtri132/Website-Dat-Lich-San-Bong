@@ -6,7 +6,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 define('DB_HOST', 'localhost');
 define('DB_PORT', 3306);
 define('DB_USERNAME', 'root');
-define('DB_PASSWORD', '123456');
+define('DB_PASSWORD', '');
 define('DB_NAME', 'football_7_booking');
 
 define('PATH_ROOT', __DIR__ . '/../');
@@ -31,8 +31,8 @@ define('CANCEL_FREE_HOURS', 24);
 define('MAX_PENDING_BOOKINGS', 3);
 
 // Tài khoản nhận tiền chuyển khoản (sửa lại cho đúng)
-define('BANK_NAME', 'Vietcombank');
-define('BANK_ACCOUNT', '0123456789');
-define('BANK_ACCOUNT_NAME', 'NGUYEN VAN A');
+define('BANK_NAME', 'MB Bank');
+define('BANK_ID', 'MB');
+define('BANK_ACCOUNT', '9999999230608');
+define('BANK_ACCOUNT_NAME', 'NGUYEN BA BINH');
 // Mã ngân hàng theo VietQR (ví dụ VCB, MB, ACB, TCB). Để rỗng nếu không muốn hiện mã QR
-define('BANK_ID', '');
